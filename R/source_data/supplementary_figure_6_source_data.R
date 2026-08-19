@@ -1,7 +1,6 @@
 # =============================================================================
 # Source Data — Supplementary Figure 6 (a: canonical exerkine z-scores;
-# b: MSD-vs-Olink cross-platform cytokine correlation). Built from committed data/
-# analysis objects, independent of the figure.
+# b: MSD-vs-Olink cross-platform cytokine correlation).
 #
 # Input:  data-raw/exerkine_list.xlsx, data/res.olink.linear.rda,
 #         data/msd.exerome.dat.rda, data/olink.exerome.dat.rda
@@ -17,10 +16,7 @@ to_olink <- function(g) ifelse(g %in% names(alias), alias[g], g)
 user_olink <- unname(to_olink(unique(toupper(trimws(readxl::read_excel(here("data-raw", "exerkine_list.xlsx"))$exerkine)))))
 mine_olink <- c("IL6","IL10","IL15","CXCL8","LIF","OSM","FGF21","GDF15","TNFSF11",
                 "FABP4","GHRL","LEP","VEGFA","DCN","FST","ANGPTL4","BDNF","MSTN","CCL2","SPP1")
-gene_map <- tibble::tibble(olink = union(user_olink, mine_olink)) %>%
-  dplyr::mutate(source = dplyr::case_when(olink %in% user_olink & olink %in% mine_olink ~ "Both lists",
-                                          olink %in% user_olink ~ "User list", TRUE ~ "Curated (literature)"),
-                list_name = olink)
+exerkine_set <- union(user_olink, mine_olink)   # canonical exerkines to show (from the curated list + literature)
 load(here("data", "res.olink.linear.rda"))
 res <- as.data.frame(res.olink.linear); res$.rid <- seq_len(nrow(res))
 long <- function(cols, val) res %>% dplyr::select(.rid, Assay, dplyr::all_of(cols)) %>%
@@ -29,10 +25,10 @@ z_tab <- long(grep("^beta\\.exposure", colnames(res), value = TRUE), "beta") %>%
   dplyr::inner_join(long(grep("^se\\.exposure", colnames(res), value = TRUE), "se") %>% dplyr::select(.rid, tp, se), by = c(".rid", "tp")) %>%
   dplyr::inner_join(long(grep("^pval\\.exposure", colnames(res), value = TRUE), "pval") %>% dplyr::select(.rid, tp, pval), by = c(".rid", "tp")) %>%
   dplyr::group_by(tp) %>% dplyr::mutate(fdr = p.adjust(pval, "BH")) %>% dplyr::ungroup() %>% dplyr::mutate(z = beta / se)
-SHEETS[["a_exerkine_zscores"]] <- z_tab %>% dplyr::filter(Assay %in% gene_map$olink) %>%
-  dplyr::left_join(gene_map, by = c("Assay" = "olink")) %>% dplyr::mutate(sig = fdr < 0.05) %>%
-  dplyr::select(source, list_name, Assay, tp, beta, se, z, pval, fdr, sig) %>%
-  dplyr::arrange(list_name, tp) %>% as.data.frame()
+SHEETS[["a_exerkine_zscores"]] <- z_tab %>% dplyr::filter(Assay %in% exerkine_set) %>%
+  dplyr::mutate(sig = fdr < 0.05) %>%
+  dplyr::select(Assay, tp, beta, se, z, pval, fdr, sig) %>%
+  dplyr::arrange(Assay, tp) %>% as.data.frame()
 
 # ---- b: MSD vs Olink paired cytokine values + per-cytokine Spearman ----------
 load(here("data", "msd.exerome.dat.rda")); load(here("data", "olink.exerome.dat.rda"))

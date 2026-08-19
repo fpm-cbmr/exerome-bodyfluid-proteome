@@ -1,6 +1,5 @@
 # =============================================================================
-# Source Data — Supplementary Figure 7 (plasma Olink dynamics). Built from committed
-# data/ analysis objects, independent of the figure.
+# Source Data — Supplementary Figure 7 (plasma Olink dynamics).
 #
 # Input:  data/res.olink.linear.rda, data/olink.exerome.dat.rda,
 #         data/res.enrich.olink.rda, data/res.enrich.olink.cluster.rda,

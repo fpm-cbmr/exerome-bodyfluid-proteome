@@ -1,6 +1,5 @@
 # =============================================================================
 # Source Data — Supplementary Figure 4 (urine tissue / cell-type enrichment).
-# Built from committed data/ analysis objects, independent of the figure.
 #
 # Input:  data/top_tissue_per_protein_urine.rda, data/sig_vs_tissue_cnt_urine.rda,
 #         data/sig_vs_celltype_cnt_urine.rda

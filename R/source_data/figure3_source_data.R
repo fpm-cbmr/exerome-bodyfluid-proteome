@@ -1,6 +1,5 @@
 # =============================================================================
-# Source Data — Figure 3. Built from committed data/ analysis objects, independent
-# of the figure-rendering script. One sheet per panel.
+# Source Data — Figure 3.
 #
 # Input:  data/plasma_tsne.rda, data/res.olink.linear.rda, data/olink.exerome.dat.rda,
 #         data/plasma_variance_decomposition.rda, data/top_tissue_per_protein_olink.rda,
@@ -27,19 +26,21 @@ SHEETS[["d_plasma_dynamics"]] <- merged_p %>% dplyr::group_by(time_label, cluste
   dplyr::mutate(se = ifelse(n > 1, sd_value / sqrt(n), 0),
                 ci_lower = mean_value - 1.96 * se, ci_upper = mean_value + 1.96 * se) %>% as.data.frame()
 
-# ---- g, h: tissue / cell-type Fisher log2(OR) matrices -----------------------
+# ---- g, h: tissue / cell-type Fisher enrichment (OR + p-values, long) --------
+# one row per (feature x cluster): odds ratio, log2(OR) (the heatmap fill),
+# raw Fisher p, and BH-adjusted p (the "*" significance drawn on the heatmap).
 enrich_or_table <- function(cnt, row_key) {
   cnt <- cnt %>% dplyr::filter(!is.na(.data[[row_key]]), .data[[row_key]] != "") %>%
     dplyr::distinct(.data[[row_key]], cluster, .keep_all = TRUE)
   keep <- cnt %>% dplyr::group_by(.data[[row_key]]) %>%
     dplyr::summarise(any_sig = any(padj < 0.05, na.rm = TRUE), .groups = "drop") %>%
     dplyr::filter(any_sig) %>% dplyr::pull(1)
-  or <- cnt %>% dplyr::filter(.data[[row_key]] %in% keep) %>%
-    dplyr::select(dplyr::all_of(row_key), cluster, fisher_OR) %>%
-    tidyr::pivot_wider(names_from = cluster, values_from = fisher_OR) %>% as.data.frame()
-  num <- setdiff(names(or), row_key)
-  or[num] <- lapply(or[num], function(v) { v[v == 0] <- NA; log2(v) })
-  names(or)[names(or) %in% num] <- paste0("C", num); or
+  cnt %>% dplyr::filter(.data[[row_key]] %in% keep) %>%
+    dplyr::transmute(feature = .data[[row_key]], cluster = paste0("C", cluster),
+                     in_cluster, fisher_OR,
+                     log2_OR = ifelse(fisher_OR == 0, NA, log2(fisher_OR)),
+                     fisher_p, padj) %>%
+    dplyr::arrange(feature, cluster) %>% as.data.frame()
 }
 load(here("data", "cluster_vs_tissue_cnt_olink.rda")); SHEETS[["g_plasma_tissue"]]   <- enrich_or_table(cluster_vs_tissue_cnt_olink, "tissue")
 load(here("data", "cluster_vs_cell_cnt_olink.rda"));   SHEETS[["h_plasma_celltype"]] <- enrich_or_table(cluster_vs_cell_cnt_olink, "celltype")

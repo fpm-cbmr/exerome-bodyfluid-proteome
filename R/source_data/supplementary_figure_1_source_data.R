@@ -1,6 +1,5 @@
 # =============================================================================
-# Source Data — Supplementary Figure 1 (saliva dynamics). Built from committed
-# data/ analysis objects, independent of the figure. One sheet per panel.
+# Source Data — Supplementary Figure 1 (saliva dynamics).
 #
 # Input:  data/res.saliva.linear.rda, data/exerome.dat.saliva.rda,
 #         data/res.enrich.saliva.rda, data/res.enrich.saliva.cluster.rda,

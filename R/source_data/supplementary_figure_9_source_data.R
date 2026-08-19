@@ -1,6 +1,5 @@
 # =============================================================================
 # Source Data — Supplementary Figure 9 (plasma tissue / cell-type enrichment).
-# Built from committed data/ analysis objects, independent of the figure.
 #
 # Input:  data/res.olink.linear.rda, data/top_tissue_per_protein_olink.rda,
 #         data/sig_vs_tissue_cnt_olink.rda, data/sig_vs_celltype_cnt_olink.rda

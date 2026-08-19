@@ -1,8 +1,5 @@
 # =============================================================================
 # Source Data — Figure 6 (secreted-exerkine cis-pQTL <-> GWAS disease network).
-# Rebuilds the coloc network from the committed analysis inputs (res.olink.linear +
-# the cis-pQTL coloc results + HPA secretome) via the shared network builder, then
-# exports the panel tables. Independent of the figure-rendering script.
 #
 # Output: source_data/SourceData_Figure6.xlsx
 # =============================================================================

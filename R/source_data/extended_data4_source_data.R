@@ -1,7 +1,6 @@
 # =============================================================================
 # Source Data — Extended Data Fig. 4 (approved drug targets among secreted coloc
 # exerkines). Built from data-raw/approved_drug_targets.csv + HPA secretome +
-# the committed discovery / replication models. Independent of the figure.
 #
 # Output: source_data/SourceData_ExtendedData4.xlsx
 # =============================================================================

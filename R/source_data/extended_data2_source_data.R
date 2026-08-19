@@ -1,6 +1,6 @@
 # =============================================================================
 # Source Data — Extended Data Fig. 2 (replication sex x time). Built from the
-# committed replication objects (analyses 10b/12/13/13b), independent of the figure.
+# committed replication objects (analyses 10b/12/13/13b)
 #
 # Input:  data/corrected_threeway_period.rds, data/validation.exerome.dat.rda,
 #         data/validation_prot.label.rda, data/go_res_sex_time.rda,

@@ -1,7 +1,5 @@
 # =============================================================================
-# Source Data — Figure 5 (replication cohort). Built from committed data/ analysis
-# objects (produced by analyses 04, 10b, 13, 13b) + results/ora/, independent of
-# the figure-rendering script. One sheet per panel.
+# Source Data — Figure 5 (replication cohort).
 #
 # Input:  data/res.olink.linear.rda, data/res.validation.linear.pilot.rda,
 #         data/agree_df.rda, data/betas_sig.rda,

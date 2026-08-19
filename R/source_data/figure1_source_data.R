@@ -1,8 +1,6 @@
 # =============================================================================
 # Source Data — Figure 1.
 #
-# Builds SourceData_Figure1.xlsx directly from the committed analysis objects in
-# data/ (produced by R/analysis/), independent of the figure-rendering script.
 # Each sheet is the table underlying one panel.
 #
 # Input:  data/res.msd.linear.rda, data/msd.exerome.dat.rda,

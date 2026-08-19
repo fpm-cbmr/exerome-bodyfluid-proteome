@@ -1,6 +1,6 @@
 # =============================================================================
 # Source Data — Supplementary Figure 5 (plasma LC-MS clusters a-d + Olink-vs-LC-MS
-# correlation e). Built from committed data/ analysis objects, independent of the figure.
+# correlation e).
 #
 # Input:  data/res.plasma.linear.rda, data/exerome.dat.plasma.rda,
 #         data/plasma_npx_data.rda, data/olink_npx.data.rda, data/res.olink.linear.rda

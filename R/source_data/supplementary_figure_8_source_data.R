@@ -1,6 +1,5 @@
 # =============================================================================
 # Source Data — Supplementary Figure 8 (plasma per-participant protein examples).
-# Built from committed data/ analysis objects, independent of the figure.
 #
 # Input:  data/res.olink.linear.rda, data/olink.exerome.dat.rda
 # Output: source_data/SourceData_SupplementaryFigure8.xlsx

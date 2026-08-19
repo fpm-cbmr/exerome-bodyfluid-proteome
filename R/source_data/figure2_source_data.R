@@ -1,6 +1,5 @@
 # =============================================================================
-# Source Data — Figure 2. Built from committed data/ analysis objects, independent
-# of the figure-rendering script. One sheet per panel.
+# Source Data — Figure 2.
 #
 # Input:  data/{saliva,urine}_tsne.rda, data/res.{saliva,urine}.linear.rda,
 #         data/exerome.dat.{saliva,urine}.rda, data/top_tissue_per_protein_saliva.rda,
@@ -61,20 +60,21 @@ SHEETS[["d_saliva_cluster_ORA"]] <- res.enrich.saliva.cluster %>%
   dplyr::filter(result.term_name %in% specific_terms[[as.character(unique(cluster))]]) %>%
   dplyr::ungroup() %>% as.data.frame()
 
-# ---- e, f, j: tissue / cell-type Fisher log2(OR) matrices --------------------
+# ---- e, f, j: tissue / cell-type Fisher enrichment (OR + p-values, long) -----
+# one row per (feature x cluster): odds ratio, log2(OR) (the heatmap fill),
+# raw Fisher p, and BH-adjusted p (the "*" significance drawn on the heatmap).
 enrich_or_table <- function(cnt, row_key) {
   cnt <- cnt %>% dplyr::filter(!is.na(.data[[row_key]]), .data[[row_key]] != "") %>%
     dplyr::distinct(.data[[row_key]], cluster, .keep_all = TRUE)
   keep <- cnt %>% dplyr::group_by(.data[[row_key]]) %>%
     dplyr::summarise(any_sig = any(padj < 0.05, na.rm = TRUE), .groups = "drop") %>%
     dplyr::filter(any_sig) %>% dplyr::pull(1)
-  or <- cnt %>% dplyr::filter(.data[[row_key]] %in% keep) %>%
-    dplyr::select(dplyr::all_of(row_key), cluster, fisher_OR) %>%
-    tidyr::pivot_wider(names_from = cluster, values_from = fisher_OR) %>% as.data.frame()
-  num <- setdiff(names(or), row_key)
-  or[num] <- lapply(or[num], function(v) { v[v == 0] <- NA; log2(v) })
-  names(or)[names(or) %in% num] <- paste0("C", num)
-  or
+  cnt %>% dplyr::filter(.data[[row_key]] %in% keep) %>%
+    dplyr::transmute(feature = .data[[row_key]], cluster = paste0("C", cluster),
+                     in_cluster, fisher_OR,
+                     log2_OR = ifelse(fisher_OR == 0, NA, log2(fisher_OR)),
+                     fisher_p, padj) %>%
+    dplyr::arrange(feature, cluster) %>% as.data.frame()
 }
 load(here("data", "cluster_vs_tissue_cnt_saliva.rda"))
 SHEETS[["e_saliva_tissue"]]   <- enrich_or_table(cluster_vs_tissue_cnt_saliva, "tissue")

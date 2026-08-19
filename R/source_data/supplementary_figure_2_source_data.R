@@ -1,6 +1,5 @@
 # =============================================================================
 # Source Data — Supplementary Figure 2 (saliva tissue / cell-type enrichment).
-# Built from committed data/ analysis objects, independent of the figure.
 #
 # Input:  data/top_tissue_per_protein_saliva.rda, data/sig_vs_tissue_cnt_saliva.rda,
 #         data/sig_vs_celltype_cnt_saliva.rda

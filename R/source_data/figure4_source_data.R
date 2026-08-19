@@ -1,8 +1,8 @@
 # =============================================================================
-# Source Data — Figure 4 (cross-fluid networks). Built from committed data/ analysis
-# objects: the cross-fluid Spearman networks (data/network/*.graphml, analysis 14)
-# and the cross-fluid container (data/se_bodyfluid.rda). One sheet per panel;
-# network panels export the node + edge tables straight from the graphml.
+# Source Data — Figure 4 (cross-fluid networks).
+# Inputs: cross-fluid Spearman networks (data/network/*.graphml, analysis 14) and
+# the cross-fluid container (data/se_bodyfluid.rda). Network panels export the
+# node + edge tables straight from the graphml.
 #
 # Output: source_data/SourceData_Figure4.xlsx
 # =============================================================================
@@ -32,10 +32,16 @@ matching_cores <- names(table(core_names)[table(core_names) > 1])
 filtered_data <- filtered_data[rownames(filtered_data)[core_names %in% matching_cores], ]
 
 mansc1 <- filtered_data[grep("MANSC1", rownames(filtered_data)), ]
-SHEETS[["c_MANSC1"]] <- data.frame(
+c_mansc1 <- data.frame(
   Saliva = as.numeric(mansc1[grepl("_saliva", rownames(mansc1)), ]),
   Plasma = as.numeric(mansc1[grepl("_plasma", rownames(mansc1)), ]),
   Time_Point = sub(".*_", "", colnames(mansc1))) %>% dplyr::filter(!is.na(Saliva) & !is.na(Plasma))
+SHEETS[["c_MANSC1"]] <- c_mansc1
+# per-time-point Spearman correlation shown on the panel (rho + p-value + n)
+SHEETS[["c_MANSC1_correlation"]] <- c_mansc1 %>% dplyr::group_by(Time_Point) %>%
+  dplyr::summarise(n = dplyr::n(), rho = cor(Saliva, Plasma, method = "spearman"),
+                   p_value = suppressWarnings(cor.test(Saliva, Plasma, method = "spearman")$p.value),
+                   .groups = "drop") %>% as.data.frame()
 
 protein_names <- rownames(filtered_data)
 res_rows <- list()
@@ -51,7 +57,7 @@ for (core in matching_cores) {
       tt <- suppressWarnings(cor.test(x, y, method = "spearman", exact = FALSE))
       src <- paste0(sub(".*_", "", rownames(pr)[i]), "_", sub(".*_", "", rownames(pr)[j]))
       res_rows[[length(res_rows) + 1]] <- data.frame(Protein = core, Correlation = unname(tt$estimate),
-                                                     Source = src, Time_Point = tm)
+                                                     p_value = unname(tt$p.value), Source = src, Time_Point = tm)
     }
   }
 }
@@ -60,11 +66,12 @@ SHEETS[["f_rho_pre_vs_0h"]] <- dplyr::bind_rows(res_rows) %>%
   dplyr::filter(!Source %in% c("urine_urine", "saliva_saliva")) %>%
   dplyr::mutate(Source = stringr::str_replace(Source, "olink", "plasma")) %>%
   dplyr::group_by(Protein, Source, Time_Point) %>%
-  dplyr::summarise(Correlation = mean(Correlation, na.rm = TRUE), .groups = "drop") %>%
+  dplyr::summarise(rho = mean(Correlation, na.rm = TRUE),
+                   p_value = mean(p_value, na.rm = TRUE), .groups = "drop") %>%
   dplyr::filter(Time_Point %in% c("Pre", "0h")) %>%
   tidyr::pivot_wider(id_cols = c(Protein, Source), names_from = Time_Point,
-                     values_from = Correlation, names_prefix = "Time_") %>%
-  tidyr::drop_na(Time_Pre, Time_0h) %>% as.data.frame()
+                     values_from = c(rho, p_value)) %>%
+  tidyr::drop_na(rho_Pre, rho_0h) %>% as.data.frame()
 
 # ---- d, e: cross-fluid network node + edge tables (0 h, 1 h) ------------------
 for (tp in c("0", "1")) {

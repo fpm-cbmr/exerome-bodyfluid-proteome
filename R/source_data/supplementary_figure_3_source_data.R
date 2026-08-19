@@ -1,6 +1,5 @@
 # =============================================================================
-# Source Data — Supplementary Figure 3 (urine dynamics). Built from committed data/
-# analysis objects, independent of the figure.
+# Source Data — Supplementary Figure 3 (urine dynamics).
 #
 # Input:  data/res.urine.linear.rda, data/exerome.dat.urine.rda,
 #         data/res.enrich.urine.rda, data/res.enrich.urine.cluster.rda,
